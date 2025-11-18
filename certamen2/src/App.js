@@ -60,8 +60,8 @@ function App() {
         return valueOrder[a.value] - valueOrder[b.value];
       });
       setCards(sorted);
-      setIsDealingNew(false);
-    }, 300);
+      setTimeout(() => setIsDealingNew(false), 100);
+    }, 350);
   };
 
   // Convertir valor a número para validación
@@ -90,55 +90,55 @@ function App() {
   const checkDosEscaleras = (cards) => {
     if (cards.length !== 8) return false;
 
-    // Agrupar cartas por pinta
-    const cardsBySuit = {
-      '♠': [],
-      '♣': [],
-      '♥': [],
-      '♦': []
-    };
+    // Función recursiva para encontrar combinaciones de escaleras
+    const findTwoEscaleras = (cardsArray, usedIndices = [], escaleras = []) => {
+      // Si ya encontramos 2 escaleras válidas
+      if (escaleras.length === 2) {
+        return true;
+      }
 
-    cards.forEach(card => {
-      cardsBySuit[card.suit].push(card);
-    });
+      // Si ya usamos todas las cartas y no tenemos 2 escaleras
+      if (usedIndices.length === 8 && escaleras.length < 2) {
+        return false;
+      }
 
-    // Intentar encontrar 2 escaleras de 4 cartas
-    const suits = Object.keys(cardsBySuit);
-    let foundEscaleras = 0;
-    let usedCards = [];
+      // Intentar formar una escalera con 4 cartas no usadas
+      for (let i = 0; i < cardsArray.length - 3; i++) {
+        if (usedIndices.includes(i)) continue;
 
-    // Probar todas las combinaciones posibles
-    for (let i = 0; i < suits.length; i++) {
-      const suitCards = cardsBySuit[suits[i]];
-      
-      if (suitCards.length >= 4) {
-        // Ordenar cartas por valor
-        const sortedCards = [...suitCards].sort((a, b) => 
-          getCardNumericValue(a.value) - getCardNumericValue(b.value)
-        );
+        for (let j = i + 1; j < cardsArray.length - 2; j++) {
+          if (usedIndices.includes(j)) continue;
 
-        // Buscar escaleras de 4 cartas consecutivas
-        for (let start = 0; start <= sortedCards.length - 4; start++) {
-          const potentialEscalera = sortedCards.slice(start, start + 4);
-          
-          if (isValidEscalera(potentialEscalera)) {
-            const cardIds = potentialEscalera.map(c => c.id);
-            const alreadyUsed = cardIds.some(id => usedCards.includes(id));
-            
-            if (!alreadyUsed) {
-              foundEscaleras++;
-              usedCards.push(...cardIds);
-              
-              if (foundEscaleras === 2) {
-                return true;
+          for (let k = j + 1; k < cardsArray.length - 1; k++) {
+            if (usedIndices.includes(k)) continue;
+
+            for (let l = k + 1; l < cardsArray.length; l++) {
+              if (usedIndices.includes(l)) continue;
+
+              const potentialEscalera = [
+                cardsArray[i],
+                cardsArray[j],
+                cardsArray[k],
+                cardsArray[l]
+              ];
+
+              if (isValidEscalera(potentialEscalera)) {
+                const newUsedIndices = [...usedIndices, i, j, k, l];
+                const newEscaleras = [...escaleras, potentialEscalera];
+
+                if (findTwoEscaleras(cardsArray, newUsedIndices, newEscaleras)) {
+                  return true;
+                }
               }
             }
           }
         }
       }
-    }
 
-    return false;
+      return false;
+    };
+
+    return findTwoEscaleras(cards);
   };
 
   // Validar juego (solo 2 escaleras)
@@ -193,7 +193,7 @@ function App() {
       <div className="container-fluid min-vh-100 bg-dark text-white py-4">
         <div className="row justify-content-center">
           <div className="col-12 col-lg-10">
-            <h1 className="text-center mb-4">🃏 Juego de Carioca 🃏</h1>
+            <h1 className="text-center mb-4">Carioca</h1>
             
             {/* Panel de agregar cartas */}
             <div className="card bg-secondary text-white mb-4 p-3">
@@ -230,7 +230,8 @@ function App() {
                     onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
                     onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
                   >
-                    ➕ Agregar
+                    <i className="bi bi-plus-circle me-2"></i>
+                    Agregar
                   </button>
                 </div>
               </div>
@@ -244,7 +245,8 @@ function App() {
                 disabled={cards.length === 0}
                 className="btn btn-warning btn-lg px-4 py-2"
               >
-                🔢 Ordenar
+                <i className="bi bi-sort-numeric-down me-2"></i>
+                Ordenar
               </button>
             </div>
 
@@ -271,17 +273,6 @@ function App() {
 
             {/* Resultados */}
             {result && <Resultados result={result} />}
-
-            {/* Instrucciones */}
-            <div className="card bg-info bg-opacity-25 p-3 mt-4">
-              <h5>📋 Reglas - Dos Escaleras</h5>
-              <ul>
-                <li><strong>Escalera:</strong> 4 cartas consecutivas de la misma pinta</li>
-                <li><strong>Juego Válido:</strong> Exactamente 8 cartas formando 2 escaleras de 4 cartas cada una</li>
-                <li><strong>Ejemplo:</strong> 2♠ 3♠ 4♠ 5♠ + 7♥ 8♥ 9♥ 10♥</li>
-                <li><strong>Importante:</strong> Los juegos no se pueden repetir</li>
-              </ul>
-            </div>
           </div>
         </div>
       </div>

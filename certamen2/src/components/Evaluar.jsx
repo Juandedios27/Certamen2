@@ -11,7 +11,8 @@ const Evaluar = ({ onEvaluate, disabled }) => {
         disabled={disabled}
         className="btn btn-success btn-lg px-4 py-2"
       >
-        ✅ Validar Juego
+        <i className="bi bi-check-circle me-2"></i>
+        Validar Juego
       </motion.button>
     </Fragment>
   );

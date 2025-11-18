@@ -20,10 +20,12 @@ const Carta = ({ card, onRemove, index, isDealingNew }) => {
     },
     exitDeal: {
       opacity: 0,
-      x: 150,
+      y: -100,
+      rotateY: 180,
+      scale: 0.3,
       transition: {
-        duration: 0.25,
-        ease: [0.4, 0, 1, 1]
+        duration: 0.3,
+        ease: [0.4, 0, 0.2, 1]
       }
     },
     exitRemove: {
