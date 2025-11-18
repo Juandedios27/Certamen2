@@ -97,55 +97,38 @@ function App() {
   const checkDosEscaleras = (cards) => {
     if (cards.length !== 8) return false;
 
-    // Función recursiva para encontrar combinaciones de escaleras
-    const findTwoEscaleras = (cardsArray, usedIndices = [], escaleras = []) => {
-      // Si ya encontramos 2 escaleras válidas
-      if (escaleras.length === 2) {
-        return true;
+    // Generar todas las combinaciones posibles de 4 cartas
+    const getCombinations = (arr, size) => {
+      if (size === 1) return arr.map(el => [el]);
+      
+      const combinations = [];
+      for (let i = 0; i <= arr.length - size; i++) {
+        const head = arr[i];
+        const tailCombs = getCombinations(arr.slice(i + 1), size - 1);
+        tailCombs.forEach(tailComb => combinations.push([head, ...tailComb]));
       }
-
-      // Si ya usamos todas las cartas y no tenemos 2 escaleras
-      if (usedIndices.length === 8 && escaleras.length < 2) {
-        return false;
-      }
-
-      // Intentar formar una escalera con 4 cartas no usadas
-      for (let i = 0; i < cardsArray.length - 3; i++) {
-        if (usedIndices.includes(i)) continue;
-
-        for (let j = i + 1; j < cardsArray.length - 2; j++) {
-          if (usedIndices.includes(j)) continue;
-
-          for (let k = j + 1; k < cardsArray.length - 1; k++) {
-            if (usedIndices.includes(k)) continue;
-
-            for (let l = k + 1; l < cardsArray.length; l++) {
-              if (usedIndices.includes(l)) continue;
-
-              const potentialEscalera = [
-                cardsArray[i],
-                cardsArray[j],
-                cardsArray[k],
-                cardsArray[l]
-              ];
-
-              if (isValidEscalera(potentialEscalera)) {
-                const newUsedIndices = [...usedIndices, i, j, k, l];
-                const newEscaleras = [...escaleras, potentialEscalera];
-
-                if (findTwoEscaleras(cardsArray, newUsedIndices, newEscaleras)) {
-                  return true;
-                }
-              }
-            }
-          }
-        }
-      }
-
-      return false;
+      return combinations;
     };
 
-    return findTwoEscaleras(cards);
+    // Obtener todas las combinaciones de 4 cartas
+    const allCombinations = getCombinations(cards, 4);
+
+    // Intentar encontrar dos escaleras válidas
+    for (let i = 0; i < allCombinations.length; i++) {
+      const firstEscalera = allCombinations[i];
+      
+      if (isValidEscalera(firstEscalera)) {
+        // Obtener las cartas restantes
+        const remainingCards = cards.filter(card => !firstEscalera.includes(card));
+        
+        // Verificar si las 4 cartas restantes forman una escalera
+        if (remainingCards.length === 4 && isValidEscalera(remainingCards)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   };
 
   // Validar juego (solo 2 escaleras)
@@ -188,7 +171,7 @@ function App() {
           fecha: new Date().toISOString()
         });
         
-        setResult('¡DOS ESCALERAS VÁLIDAS!');
+        setResult('¡DOS ESCALAS VÁLIDAS!');
       }
     } else {
       setResult('NO FORMA JUEGO :C');
