@@ -118,7 +118,7 @@ const Carta = ({ card, onRemove, index, isDealingNew, isShuffling }) => {
             </div>
 
             <div 
-              className="text-end fw-bold"
+              className="text-start fw-bold"
               style={{ 
                 fontSize: '18px', 
                 color: isRed ? '#dc3545' : '#000',

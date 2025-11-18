@@ -197,7 +197,6 @@ function App() {
                     value={cardValue}
                     onChange={(e) => setCardValue(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleAddCard()}
-                    placeholder="Ej: A, 7, K"
                   />
                 </div>
                 <div className="col-md-4">
