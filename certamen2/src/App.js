@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
 import Carta from './components/Carta';
@@ -14,6 +14,7 @@ function App() {
   const [cardValue, setCardValue] = useState('');
   const [selectedSuit, setSelectedSuit] = useState('♠');
   const [isDealingNew, setIsDealingNew] = useState(false);
+  const [isShuffling, setIsShuffling] = useState(false);
 
   const suits = ['♠', '♣', '♥', '♦'];
   const validValues = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
@@ -53,15 +54,21 @@ function App() {
   const handleSortCards = () => {
     const valueOrder = { 'A': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13 };
     
-    setIsDealingNew(true);
+    // Iniciar animación de mezcla
+    setIsShuffling(true);
     
     setTimeout(() => {
-      const sorted = [...cards].sort((a, b) => {
-        return valueOrder[a.value] - valueOrder[b.value];
-      });
-      setCards(sorted);
-      setTimeout(() => setIsDealingNew(false), 100);
-    }, 350);
+      setIsShuffling(false);
+      setIsDealingNew(true);
+      
+      setTimeout(() => {
+        const sorted = [...cards].sort((a, b) => {
+          return valueOrder[a.value] - valueOrder[b.value];
+        });
+        setCards(sorted);
+        setTimeout(() => setIsDealingNew(false), 100);
+      }, 350);
+    }, 600);
   };
 
   // Convertir valor a número para validación
@@ -190,17 +197,17 @@ function App() {
 
   return (
     <Fragment>
-      <div className="container-fluid min-vh-100 bg-dark text-white py-4">
+      <div className="container-fluid min-vh-100 py-4" style={{ backgroundColor: '#f8f9fa' }}>
         <div className="row justify-content-center">
           <div className="col-12 col-lg-10">
-            <h1 className="text-center mb-4">Carioca</h1>
+            <h1 className="text-center mb-4" style={{ color: '#2c3e50', fontWeight: '300', letterSpacing: '2px' }}>Carioca</h1>
             
             {/* Panel de agregar cartas */}
-            <div className="card bg-secondary text-white mb-4 p-3">
-              <h4 className="mb-3">Agregar Carta</h4>
+            <div className="card mb-4 p-3" style={{ backgroundColor: '#ffffff', border: '1px solid #e0e0e0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+              <h4 className="mb-3" style={{ color: '#495057', fontWeight: '400' }}>Agregar Carta</h4>
               <div className="row g-3">
                 <div className="col-md-4">
-                  <label className="form-label">Valor (A, 2-10, J, Q, K)</label>
+                  <label className="form-label" style={{ color: '#6c757d', fontSize: '0.9rem' }}>Valor (A, 2-10, J, Q, K)</label>
                   <input
                     type="text"
                     className="form-control"
@@ -211,7 +218,7 @@ function App() {
                   />
                 </div>
                 <div className="col-md-4">
-                  <label className="form-label">Pinta</label>
+                  <label className="form-label" style={{ color: '#6c757d', fontSize: '0.9rem' }}>Pinta</label>
                   <select
                     className="form-select"
                     value={selectedSuit}
@@ -223,16 +230,17 @@ function App() {
                   </select>
                 </div>
                 <div className="col-md-4 d-flex align-items-end">
-                  <button
+                  <motion.button
                     onClick={handleAddCard}
-                    className="btn btn-primary w-100"
-                    style={{ transition: 'all 0.2s' }}
-                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
-                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                    className="btn w-100"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    style={{ backgroundColor: '#4a90e2', color: 'white', border: 'none', fontWeight: '400' }}
                   >
                     <i className="bi bi-plus-circle me-2"></i>
                     Agregar
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             </div>
@@ -243,7 +251,8 @@ function App() {
               <button
                 onClick={handleSortCards}
                 disabled={cards.length === 0}
-                className="btn btn-warning btn-lg px-4 py-2"
+                className="btn btn-lg px-4 py-2"
+                style={{ backgroundColor: cards.length === 0 ? '#e9ecef' : '#f8f9fa', color: cards.length === 0 ? '#adb5bd' : '#495057', border: '1px solid #dee2e6', fontWeight: '400' }}
               >
                 <i className="bi bi-sort-numeric-down me-2"></i>
                 Ordenar
@@ -251,8 +260,8 @@ function App() {
             </div>
 
             {/* Cartas en mesa */}
-            <div className="card bg-success bg-opacity-25 p-4 mb-4" style={{ minHeight: '250px' }}>
-              <h4 className="text-center mb-3">Cartas en Mesa ({cards.length})</h4>
+            <div className="card p-4 mb-4" style={{ minHeight: '250px', backgroundColor: '#ffffff', border: '1px solid #e0e0e0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+              <h4 className="text-center mb-3" style={{ color: '#495057', fontWeight: '400' }}>Cartas en Mesa ({cards.length})</h4>
               <div className="d-flex flex-wrap gap-3 justify-content-center">
                 <AnimatePresence mode="popLayout">
                   {cards.map((card, index) => (
@@ -262,12 +271,13 @@ function App() {
                       onRemove={handleRemoveCard}
                       index={index}
                       isDealingNew={isDealingNew}
+                      isShuffling={isShuffling}
                     />
                   ))}
                 </AnimatePresence>
               </div>
               {cards.length === 0 && (
-                <p className="text-center text-muted mt-4">Agrega cartas para comenzar</p>
+                <p className="text-center mt-4" style={{ color: '#adb5bd', fontWeight: '300' }}>Agrega cartas para comenzar</p>
               )}
             </div>
 

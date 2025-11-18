@@ -9,7 +9,8 @@ const Evaluar = ({ onEvaluate, disabled }) => {
         whileTap={!disabled ? { scale: 0.95 } : {}}
         onClick={onEvaluate}
         disabled={disabled}
-        className="btn btn-success btn-lg px-4 py-2"
+        className="btn btn-lg px-4 py-2"
+        style={{ backgroundColor: disabled ? '#e9ecef' : '#5cb85c', color: disabled ? '#adb5bd' : 'white', border: 'none', fontWeight: '400' }}
       >
         <i className="bi bi-check-circle me-2"></i>
         Validar Juego

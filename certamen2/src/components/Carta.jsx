@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { motion } from 'framer-motion';
 
-const Carta = ({ card, onRemove, index, isDealingNew }) => {
+const Carta = ({ card, onRemove, index, isDealingNew, isShuffling }) => {
   const isRed = card.suit === '♥' || card.suit === '♦';
 
   const cardVariants = {
@@ -16,6 +16,18 @@ const Carta = ({ card, onRemove, index, isDealingNew }) => {
         delay: index * 0.05,
         duration: 0.35,
         ease: [0.25, 0.1, 0.25, 1]
+      }
+    },
+    shuffling: {
+      opacity: 1,
+      x: [0, -30, 30, -20, 20, 0],
+      y: [0, -40, 40, -30, 30, 0],
+      rotate: [0, -15, 15, -10, 10, 0],
+      scale: [1, 0.95, 1.05, 0.98, 1.02, 1],
+      transition: {
+        duration: 0.6,
+        times: [0, 0.2, 0.4, 0.6, 0.8, 1],
+        ease: "easeInOut"
       }
     },
     exitDeal: {
@@ -48,7 +60,7 @@ const Carta = ({ card, onRemove, index, isDealingNew }) => {
       <motion.div
         variants={cardVariants}
         initial="hidden"
-        animate="visible"
+        animate={isShuffling ? "shuffling" : "visible"}
         exit={isDealingNew ? "exitDeal" : "exitRemove"}
         className="position-relative"
         style={{ 
@@ -60,8 +72,9 @@ const Carta = ({ card, onRemove, index, isDealingNew }) => {
         <div 
           className="card bg-white text-dark h-100 position-relative"
           style={{ 
-            borderRadius: '8px',
-            border: '2px solid #333'
+            borderRadius: '12px',
+            border: '1px solid #e0e0e0',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
           }}
         >
           <button

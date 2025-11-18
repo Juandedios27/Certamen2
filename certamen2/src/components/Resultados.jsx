@@ -23,7 +23,11 @@ const Resultados = ({ result }) => {
         className="text-center mt-4 p-4"
       >
         <motion.h1 
-          className={`display-3 fw-bold ${isValid ? 'text-success' : isError ? 'text-danger' : 'text-warning'}`}
+          className={`display-3 fw-bold`}
+          style={{ 
+            color: isValid ? '#5cb85c' : isError ? '#e74c3c' : '#f39c12',
+            fontWeight: '300'
+          }}
           animate={isValid ? { scale: [1, 1.1, 1] } : {}}
           transition={{ repeat: Infinity, duration: 1.5 }}
         >
